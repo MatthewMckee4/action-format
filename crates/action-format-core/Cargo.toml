@@ -13,7 +13,6 @@ description = "Core formatting logic for action-format"
 thiserror = { workspace = true }
 
 [dev-dependencies]
-insta = { workspace = true }
 
 [lints]
 workspace = true

@@ -35,7 +35,6 @@ dependencies = [
 name = "action-format-core"
 version = "0.1.0"
 dependencies = [
- "insta",
  "thiserror",
 ]
 

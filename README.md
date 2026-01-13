@@ -1,5 +1,7 @@
 # action-format
 
+[![codecov](https://codecov.io/gh/MatthewMckee4/action-format/graph/badge.svg?token=TDAWCJCVJ4)](https://codecov.io/gh/MatthewMckee4/action-format)
+
 A fast GitHub Actions workflow formatter written in Rust.
 
 ## Features
