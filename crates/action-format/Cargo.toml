@@ -1,0 +1,37 @@
+[package]
+name = "action-format"
+version = "0.0.0"
+edition.workspace = true
+rust-version.workspace = true
+homepage.workspace = true
+repository.workspace = true
+authors.workspace = true
+license.workspace = true
+default-run = "action-format"
+
+[[bin]]
+name = "action-format"
+path = "src/main.rs"
+
+[dependencies]
+action-format-cli = { workspace = true }
+action-format-core = { workspace = true }
+
+anstream = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
+fs-err = { workspace = true }
+owo-colors = { workspace = true }
+similar = { workspace = true }
+terminal_size = { workspace = true }
+walkdir = { workspace = true }
+
+[dev-dependencies]
+assert_cmd = { workspace = true }
+assert_fs = { workspace = true }
+insta = { workspace = true }
+regex = { workspace = true }
+tempfile = { workspace = true }
+
+[lints]
+workspace = true

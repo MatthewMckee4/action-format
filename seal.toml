@@ -1,0 +1,25 @@
+[release]
+current-version = "0.1.0"
+
+version-files = [
+    "crates/action-format/Cargo.toml",
+    "README.md",
+    { path = "dist-workspace.toml", field = "workspace.version", format = "toml" }
+]
+
+commit-message = "Release v{version}"
+branch-name = "release/v{version}"
+push = true
+confirm = true
+
+[changelog.section-labels]
+"Bug Fixes" = ["bug"]
+"New Features" = ["enhancement"]
+"CLI" = ["cli"]
+"Documentation" = ["documentation"]
+
+[changelog]
+ignore-contributors = ["dependabot[bot]", "Copilot"]
+ignore-labels = ["internal", "ci", "duplicate", "wontfix"]
+include-contributors = true
+changelog-heading = "{version}"
