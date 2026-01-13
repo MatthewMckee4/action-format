@@ -10,8 +10,8 @@ license.workspace = true
 description = "CLI argument parsing for action-format"
 
 [dependencies]
-clap = { workspace = true }
 anstream = { workspace = true }
+clap = { workspace = true }
 
 [lints]
 workspace = true

@@ -5,6 +5,7 @@ This file provides guidance to Claude Code when working with this repository.
 ## Project Overview
 
 action-format is a GitHub Actions workflow formatter written in Rust. Cargo workspace with:
+
 - `crates/action-format` - CLI binary
 - `crates/action-format-cli` - CLI argument parsing
 - `crates/action-format-core` - Core formatting logic

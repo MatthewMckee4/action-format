@@ -11,8 +11,9 @@ authors = ["Matthew McKee <matthewmckee4@yahoo.co.uk>"]
 license = "MIT"
 
 [workspace.dependencies]
-action-format-core = { path = "crates/action-format-core" }
 action-format-cli = { path = "crates/action-format-cli" }
+action-format-core = { path = "crates/action-format-core" }
+
 anstream = "0.6"
 anyhow = "1.0"
 assert_cmd = "2.1"

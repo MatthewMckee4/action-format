@@ -15,23 +15,23 @@ name = "action-format"
 path = "src/main.rs"
 
 [dependencies]
-action-format-core = { workspace = true }
 action-format-cli = { workspace = true }
-clap = { workspace = true }
-anyhow = { workspace = true }
+action-format-core = { workspace = true }
 anstream = { workspace = true }
-owo-colors = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true }
 fs-err = { workspace = true }
-walkdir = { workspace = true }
+owo-colors = { workspace = true }
 similar = { workspace = true }
 terminal_size = { workspace = true }
+walkdir = { workspace = true }
 
 [dev-dependencies]
-insta = { workspace = true }
-tempfile = { workspace = true }
 assert_cmd = { workspace = true }
 assert_fs = { workspace = true }
+insta = { workspace = true }
 regex = { workspace = true }
+tempfile = { workspace = true }
 
 [lints]
 workspace = true

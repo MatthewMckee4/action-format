@@ -7,7 +7,7 @@ A fast GitHub Actions workflow formatter.
 - Consistent 2-space indentation normalization
 - Blank line separation between workflow steps
 - Preserves comments, anchors, and YAML semantics
-- Fast execution (<100ms for typical workflows)
+- Fast execution (\<100ms for typical workflows)
 
 ## Installation
 
