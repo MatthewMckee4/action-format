@@ -3,7 +3,6 @@ current-version = "0.1.0"
 
 version-files = [
     "crates/action-format/Cargo.toml",
-    "crates/action-format-core/Cargo.toml",
     "README.md",
     { path = "dist-workspace.toml", field = "workspace.version", format = "toml" }
 ]

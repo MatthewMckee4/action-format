@@ -1,13 +1,12 @@
 [package]
 name = "action-format"
-version = "0.1.0"
+version = "0.0.0"
 edition.workspace = true
 rust-version.workspace = true
 homepage.workspace = true
 repository.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "A fast GitHub Actions workflow formatter"
 default-run = "action-format"
 
 [[bin]]
@@ -17,6 +16,7 @@ path = "src/main.rs"
 [dependencies]
 action-format-cli = { workspace = true }
 action-format-core = { workspace = true }
+
 anstream = { workspace = true }
 anyhow = { workspace = true }
 clap = { workspace = true }
