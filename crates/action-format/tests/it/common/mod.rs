@@ -109,7 +109,7 @@ pub static INSTA_FILTERS: &[(&str, &str)] = &[
     (r"\\", "/"),
     // Rewrite Windows output to Unix output
     (r"\\([\w\d]|\.)", "/$1"),
-    (r"seal\.exe", "seal"),
+    (r"action-format\.exe", "action-format"),
     // Strip ANSI color codes (match ESC character using character class)
     (r"[\x1b]\[[0-9;]*m", ""),
     (r"\d+(?:;\d+)*m", ""),
