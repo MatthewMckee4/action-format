@@ -76,6 +76,15 @@ impl TestContext {
         self
     }
 
+    /// Create a config file at .github/action-format.toml with the given content.
+    pub fn config(&self, content: &str) -> &Self {
+        self.root
+            .child(".github/action-format.toml")
+            .write_str(content.strip_prefix('\n').unwrap_or(content))
+            .expect("Failed to write config file");
+        self
+    }
+
     /// Read a file from .github/workflows and return its contents.
     pub fn read_workflow(&self, name: &str) -> String {
         std::fs::read_to_string(self.root.join(format!(".github/workflows/{name}")))
