@@ -1783,3 +1783,368 @@ jobs:
             run: cargo build
     ");
 }
+
+// Config file tests
+
+#[test]
+fn test_config_custom_indent_size() {
+    let context = TestContext::new();
+    context.config(
+        r"
+indent_size = 4
+",
+    );
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build
+",
+    );
+
+    context.command().assert().success();
+
+    let content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(content, @r"
+    name: CI
+    on: push
+    jobs:
+        build:
+            runs-on: ubuntu-latest
+            steps:
+                - uses: actions/checkout@v4
+
+                - name: Build
+                    run: cargo build
+    ");
+}
+
+#[test]
+fn test_config_disable_separate_steps() {
+    let context = TestContext::new();
+    context.config(
+        r"
+separate_steps = false
+",
+    );
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build
+",
+    );
+
+    context.command().assert().success();
+
+    let content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(content, @r"
+    name: CI
+    on: push
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - name: Build
+            run: cargo build
+    ");
+}
+
+#[test]
+fn test_config_disable_separate_jobs() {
+    let context = TestContext::new();
+    context.config(
+        r"
+separate_jobs = false
+",
+    );
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+",
+    );
+
+    context.command().assert().success();
+
+    let content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(content, @r"
+    name: CI
+    on: push
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+      test:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+    ");
+}
+
+#[test]
+fn test_config_ignore_file_by_name() {
+    let context = TestContext::new();
+    context.config(
+        r#"
+ignore = ["ci.yml"]
+"#,
+    );
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build
+",
+    );
+    context.workflow(
+        "release.yml",
+        r"name: Release
+on: push
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Release
+        run: cargo publish
+",
+    );
+
+    action_format_snapshot!(context.filters(), context.command(), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Reformatted: .github/workflows/release.yml
+
+    ----- stderr -----
+    ");
+
+    // ci.yml should be unchanged (ignored)
+    let ci_content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(ci_content, @r"
+    name: CI
+    on: push
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - name: Build
+            run: cargo build
+    ");
+
+    // release.yml should be formatted
+    let release_content = context.read_workflow("release.yml");
+    insta::assert_snapshot!(release_content, @r"
+    name: Release
+    on: push
+    jobs:
+      release:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: Release
+            run: cargo publish
+    ");
+}
+
+#[test]
+fn test_config_ignore_file_by_path() {
+    let context = TestContext::new();
+    context.config(
+        r#"
+ignore = [".github/workflows/ci.yml"]
+"#,
+    );
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build
+",
+    );
+    context.workflow(
+        "release.yml",
+        r"name: Release
+on: push
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Release
+        run: cargo publish
+",
+    );
+
+    action_format_snapshot!(context.filters(), context.command(), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+    Reformatted: .github/workflows/release.yml
+
+    ----- stderr -----
+    ");
+
+    // ci.yml should be unchanged (ignored)
+    let ci_content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(ci_content, @r"
+    name: CI
+    on: push
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - name: Build
+            run: cargo build
+    ");
+}
+
+#[test]
+fn test_config_ignore_multiple_files() {
+    let context = TestContext::new();
+    context.config(
+        r#"
+ignore = ["ci.yml", "release.yml"]
+"#,
+    );
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: cargo build
+",
+    );
+    context.workflow(
+        "release.yml",
+        r"name: Release
+on: push
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+",
+    );
+
+    // Both files ignored, nothing to format
+    action_format_snapshot!(context.filters(), context.command(), @r"
+    success: true
+    exit_code: 0
+    ----- stdout -----
+
+    ----- stderr -----
+    ");
+}
+
+#[test]
+fn test_config_partial_config() {
+    let context = TestContext::new();
+    // Only specify one option, others should use defaults
+    context.config(
+        r"
+indent_size = 4
+",
+    );
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+",
+    );
+
+    context.command().assert().success();
+
+    // Should have 4-space indent AND step/job separation (defaults)
+    let content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(content, @r"
+    name: CI
+    on: push
+    jobs:
+        build:
+            runs-on: ubuntu-latest
+            steps:
+                - uses: actions/checkout@v4
+
+        test:
+            runs-on: ubuntu-latest
+            steps:
+                - uses: actions/checkout@v4
+    ");
+}
+
+#[test]
+fn test_config_invalid_toml() {
+    let context = TestContext::new();
+    context.config(
+        r"
+this is not valid toml [[[
+",
+    );
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+",
+    );
+
+    context.command().assert().failure();
+}

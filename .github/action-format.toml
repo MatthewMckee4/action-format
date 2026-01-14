@@ -1,0 +1,5 @@
+# Configuration for action-format
+# See: https://github.com/MatthewMckee4/action-format
+
+# Files to ignore (release.yml uses auto-generated changelog formatting)
+ignore = ["release.yml"]

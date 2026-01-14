@@ -14,6 +14,7 @@ mod printer;
 use printer::Printer;
 
 const WORKFLOWS_DIR: &str = ".github/workflows";
+const CONFIG_FILE: &str = ".github/action-format.toml";
 
 #[derive(Copy, Clone)]
 pub enum ExitStatus {
@@ -71,7 +72,9 @@ fn run(cli: &Cli, printer: Printer) -> Result<ExitStatus> {
         anyhow::bail!("No {WORKFLOWS_DIR} directory found");
     }
 
-    let config = FormatterConfig::default();
+    let config_path = Path::new(CONFIG_FILE);
+    let config = FormatterConfig::from_file(config_path)?;
+
     let mut any_changed = false;
     let mut any_error = false;
 
@@ -79,7 +82,8 @@ fn run(cli: &Cli, printer: Printer) -> Result<ExitStatus> {
         .sort_by_file_name()
         .into_iter()
         .filter_map(Result::ok)
-        .filter(|e| is_workflow_file(e.path()));
+        .filter(|e| is_workflow_file(e.path()))
+        .filter(|e| !config.should_ignore(e.path()));
 
     for entry in walker {
         match process_file(entry.path(), &config, cli, printer) {
