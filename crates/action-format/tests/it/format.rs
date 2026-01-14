@@ -1980,6 +1980,7 @@ jobs:
 }
 
 #[test]
+#[cfg(unix)]
 fn test_config_ignore_file_by_path() {
     let context = TestContext::new();
     context.config(
