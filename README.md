@@ -15,12 +15,12 @@ A fast GitHub Actions workflow formatter written in Rust.
 
 ```shell
 # macOS and Linux
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/MatthewMckee4/action-format/releases/0.0.0/download/action-format-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/MatthewMckee4/action-format/releases/0.0.0-alpha.0/download/action-format-installer.sh | sh
 ```
 
 ```shell
 # Windows
-powershell -ExecutionPolicy Bypass -c "irm https://github.com/MatthewMckee4/action-format/releases/0.0.0/download/action-format-installer.ps1 | iex"
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/MatthewMckee4/action-format/releases/0.0.0-alpha.0/download/action-format-installer.ps1 | iex"
 ```
 
 ## Usage
