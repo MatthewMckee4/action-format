@@ -8,3 +8,6 @@ coverage:
     patch:
       default:
         enabled: false
+
+ignore:
+  - "crates/action-format/**/*"

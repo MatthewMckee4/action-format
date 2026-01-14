@@ -83,10 +83,10 @@ impl TestContext {
     }
 
     /// Create an action-format command for testing.
-    #[allow(clippy::unused_self)]
     pub fn command(&self) -> Command {
         let mut command = Command::new(get_bin());
         command.current_dir(self.root.path());
+        command.env("NO_COLOR", "1");
         command
     }
 }
@@ -101,18 +101,18 @@ pub fn get_bin() -> PathBuf {
     PathBuf::from(env!("CARGO_BIN_EXE_action-format"))
 }
 
+/// Common filters for snapshot testing.
 pub static INSTA_FILTERS: &[(&str, &str)] = &[
+    // Normalize Windows line endings
     (r"\r\n", "\n"),
+    // Normalize Windows paths
     (r"\\", "/"),
+    // Rewrite Windows output to Unix output
     (r"\\([\w\d]|\.)", "/$1"),
-    (r"action-format\.exe", "action-format"),
-    (
-        r"action-format(-.*)? \d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?",
-        r"action-format [VERSION]",
-    ),
+    (r"seal\.exe", "seal"),
+    // Strip ANSI color codes (match ESC character using character class)
     (r"[\x1b]\[[0-9;]*m", ""),
-    // Normalize .github/workflows path
-    (r"\.github/workflows/", ""),
+    (r"\d+(?:;\d+)*m", ""),
 ];
 
 pub fn apply_filters<T: AsRef<str>>(mut snapshot: String, filters: impl AsRef<[(T, T)]>) -> String {
