@@ -1385,8 +1385,8 @@ jobs:
     success: true
     exit_code: 0
     ----- stdout -----
-    Reformatted: .github/workflows/b_release.yml
     Reformatted: .github/workflows/a_ci.yml
+    Reformatted: .github/workflows/b_release.yml
 
     ----- stderr -----
     ");

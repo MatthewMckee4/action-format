@@ -75,11 +75,13 @@ fn run(cli: &Cli, printer: Printer) -> Result<ExitStatus> {
     let mut any_changed = false;
     let mut any_error = false;
 
-    for entry in walkdir::WalkDir::new(workflows_path)
+    let walker = walkdir::WalkDir::new(workflows_path)
+        .sort_by_file_name()
         .into_iter()
-        .filter_map(std::result::Result::ok)
-        .filter(|e| is_workflow_file(e.path()))
-    {
+        .filter_map(Result::ok)
+        .filter(|e| is_workflow_file(e.path()));
+
+    for entry in walker {
         match process_file(entry.path(), &config, cli, printer) {
             Ok(changed) => any_changed |= changed,
             Err(e) => {
