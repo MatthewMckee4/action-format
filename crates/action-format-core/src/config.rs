@@ -5,6 +5,8 @@ pub struct FormatterConfig {
     pub indent_size: usize,
     /// Whether to add blank lines between steps (default: true)
     pub separate_steps: bool,
+    /// Whether to add blank lines between jobs (default: true)
+    pub separate_jobs: bool,
 }
 
 impl Default for FormatterConfig {
@@ -12,6 +14,7 @@ impl Default for FormatterConfig {
         Self {
             indent_size: 2,
             separate_steps: true,
+            separate_jobs: true,
         }
     }
 }

@@ -82,6 +82,127 @@ jobs:
 }
 
 #[test]
+fn test_format_job_separation() {
+    let context = TestContext::new();
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+",
+    );
+
+    context.command().assert().success();
+
+    let content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(content, @r"
+    name: CI
+    on: push
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+      test:
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+          - uses: actions/checkout@v4
+    ");
+}
+
+#[test]
+fn test_format_job_separation_with_comments() {
+    let context = TestContext::new();
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  # Build job
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+  # Test job
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+",
+    );
+
+    context.command().assert().success();
+
+    let content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(content, @r"
+    name: CI
+    on: push
+    jobs:
+      # Build job
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+      # Test job
+
+      test:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+    ");
+}
+
+#[test]
+fn test_format_job_separation_preserves_existing_blank() {
+    let context = TestContext::new();
+    context.workflow(
+        "ci.yml",
+        r"name: CI
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+",
+    );
+
+    context.command().assert().success();
+
+    let content = context.read_workflow("ci.yml");
+    insta::assert_snapshot!(content, @r"
+    name: CI
+    on: push
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+      test:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+    ");
+}
+
+#[test]
 fn test_format_preserves_comments() {
     let context = TestContext::new();
     context.workflow(
@@ -239,6 +360,7 @@ jobs:
 
           - name: Build
             run: cargo build
+
       test:
         runs-on: ubuntu-latest
         needs: build
@@ -247,6 +369,7 @@ jobs:
 
           - name: Test
             run: cargo test
+
       lint:
         runs-on: ubuntu-latest
         steps:
@@ -709,6 +832,7 @@ jobs:
           - name: Get version
             id: get_version
             run: echo 'version=1.0.0' >> $GITHUB_OUTPUT
+
       build:
         runs-on: ubuntu-latest
         needs: version
@@ -956,6 +1080,7 @@ jobs:
               name: binary
               path: target/release/myapp
               retention-days: 5
+
       test:
         runs-on: ubuntu-latest
         needs: build
@@ -1169,6 +1294,7 @@ jobs:
           target: release
         secrets:
           deploy_key: ${{ secrets.DEPLOY_KEY }}
+
       call-external:
         uses: org/repo/.github/workflows/shared.yml@main
         with:

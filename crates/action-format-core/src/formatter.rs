@@ -15,6 +15,11 @@ pub fn format_string(content: &str, config: &FormatterConfig) -> Result<String, 
     let mut first_line = true;
     let mut prev_line_blank = false;
 
+    // Job tracking
+    let mut in_jobs_section = false;
+    let mut jobs_indent: Option<usize> = None;
+    let mut seen_first_job = false;
+
     for (line_num, line) in content.lines().enumerate() {
         let trimmed = line.trim_start();
         let is_blank = trimmed.is_empty();
@@ -36,6 +41,44 @@ pub fn format_string(content: &str, config: &FormatterConfig) -> Result<String, 
                 .sum()
         } else {
             original_indent
+        };
+
+        // Detect jobs: key at root level (indent 0)
+        if indent_spaces == 0 && trimmed.starts_with("jobs:") {
+            in_jobs_section = true;
+            jobs_indent = None;
+            seen_first_job = false;
+        }
+
+        // Check if we've exited the jobs section (another root-level key)
+        if in_jobs_section && indent_spaces == 0 && !is_blank && !trimmed.starts_with('#') {
+            if !trimmed.starts_with("jobs:") && trimmed.contains(':') {
+                in_jobs_section = false;
+                jobs_indent = None;
+                seen_first_job = false;
+            }
+        }
+
+        // Detect if we're at a job definition (key: at jobs level)
+        let is_job_item = if in_jobs_section
+            && !is_blank
+            && !trimmed.starts_with('#')
+            && !trimmed.starts_with('-')
+            && trimmed.contains(':')
+        {
+            match jobs_indent {
+                None => {
+                    if indent_spaces > 0 {
+                        jobs_indent = Some(indent_spaces);
+                        true
+                    } else {
+                        false
+                    }
+                }
+                Some(expected) => indent_spaces == expected,
+            }
+        } else {
+            false
         };
 
         // Detect steps: key at any level
@@ -69,6 +112,16 @@ pub fn format_string(content: &str, config: &FormatterConfig) -> Result<String, 
                     }
                 }
             }
+        }
+
+        // Add blank line before job items (except the first one, and only if not already blank)
+        if config.separate_jobs && is_job_item && seen_first_job && !prev_line_blank {
+            output.push('\n');
+        }
+
+        // Update seen_first_job after we've used it for the blank line decision
+        if is_job_item {
+            seen_first_job = true;
         }
 
         // Add blank line before step items (except the first one, and only if not already blank)
