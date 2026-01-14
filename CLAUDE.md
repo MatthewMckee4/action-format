@@ -18,9 +18,10 @@ Do not add too many comments. Only add comments where necessary, if the code is 
 
 ```shell
 cargo build
-cargo test
+cargo nextest run
 cargo fmt
 cargo run -p action-format
+prek run -a  # Run pre-commit hooks
 ```
 
 ## Architecture
