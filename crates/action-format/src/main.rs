@@ -43,7 +43,22 @@ fn main() -> ExitCode {
     match run(&cli, printer) {
         Ok(status) => status.into(),
         Err(err) => {
-            let _ = writeln!(printer.stderr(), "{}: {}", "error".red().bold(), err);
+            #[allow(clippy::print_stderr)]
+            {
+                let mut causes = err.chain();
+                eprintln!(
+                    "{}: {}",
+                    "error".red().bold(),
+                    causes.next().unwrap().to_string().trim()
+                );
+                for cause in causes {
+                    eprintln!(
+                        "  {}: {}",
+                        "Caused by".red().bold(),
+                        cause.to_string().trim()
+                    );
+                }
+            }
             ExitStatus::Error.into()
         }
     }
@@ -60,11 +75,13 @@ fn run(cli: &Cli, printer: Printer) -> Result<ExitStatus> {
     let mut any_changed = false;
     let mut any_error = false;
 
-    for entry in walkdir::WalkDir::new(workflows_path)
+    let walker = walkdir::WalkDir::new(workflows_path)
+        .sort_by_file_name()
         .into_iter()
-        .filter_map(std::result::Result::ok)
-        .filter(|e| is_workflow_file(e.path()))
-    {
+        .filter_map(Result::ok)
+        .filter(|e| is_workflow_file(e.path()));
+
+    for entry in walker {
         match process_file(entry.path(), &config, cli, printer) {
             Ok(changed) => any_changed |= changed,
             Err(e) => {
@@ -121,7 +138,10 @@ fn process_file(
 
     if cli.diff {
         print_diff(path, &content, &formatted, printer);
+        return Ok(true);
     }
+
+    fs_err::write(path, &formatted)?;
 
     let _ = writeln!(
         printer.stdout(),
@@ -130,7 +150,6 @@ fn process_file(
         path.display()
     );
 
-    fs_err::write(path, &formatted)?;
     Ok(true)
 }
 
