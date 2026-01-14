@@ -1,5 +1,5 @@
 [release]
-current-version = "0.1.0"
+current-version = "0.0.0-alpha.0"
 
 version-files = [
     "crates/action-format/Cargo.toml",
