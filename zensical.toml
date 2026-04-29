@@ -1,10 +1,10 @@
 [project]
 site_name = "action-format"
-site_url = "https://karva-dev.github.io/action-format"
+site_url = "https://matthewmckee4.github.io/action-format"
 site_description = "A fast GitHub Actions workflow formatter"
 site_author = "Matthew McKee"
-repo_url = "https://github.com/karva-dev/action-format"
-repo_name = "karva-dev/action-format"
+repo_url = "https://github.com/MatthewMckee4/action-format"
+repo_name = "MatthewMckee4/action-format"
 
 docs_dir = "docs"
 site_dir = "site"

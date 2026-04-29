@@ -156,5 +156,5 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: lcov.info
-          slug: karva-dev/action-format
+          slug: MatthewMckee4/action-format
           fail_ci_if_error: true
