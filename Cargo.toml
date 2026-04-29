@@ -5,8 +5,8 @@ resolver = "2"
 [workspace.package]
 edition = "2024"
 rust-version = "1.90"
-homepage = "https://github.com/karva-dev/action-format"
-repository = "https://github.com/karva-dev/action-format"
+homepage = "https://github.com/MatthewMckee4/action-format"
+repository = "https://github.com/MatthewMckee4/action-format"
 authors = ["Matthew Mckee <matthewmckee04@yahoo.co.uk>"]
 license = "MIT"
 
