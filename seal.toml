@@ -2,6 +2,7 @@
 current-version = "0.0.0-alpha.0"
 
 version-files = [
+    { path = ".github/workflows/release.yml", search = "VERSION: \"{version}\"" },
     "crates/action-format/Cargo.toml",
     "README.md",
     { path = "dist-workspace.toml", field = "workspace.version", format = "toml" }
@@ -11,10 +12,19 @@ commit-message = "Release v{version}"
 branch-name = "release/v{version}"
 push = true
 confirm = true
+pre-commit-commands = ["cargo update --workspace"]
+
+[release.pull-request]
+title = "Release v{version}"
+body = "Prepare release v{version}."
+base = "main"
+draft = false
 
 [changelog.section-labels]
 "Bug Fixes" = ["bug"]
 "New Features" = ["enhancement"]
+"Formatting" = ["formatting"]
+"Configuration" = ["configuration"]
 "CLI" = ["cli"]
 "Documentation" = ["documentation"]
 

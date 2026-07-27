@@ -37,6 +37,21 @@ cargo test
 cargo insta review
 ```
 
+## Release Process
+
+Run the `Prepare release` workflow with the version bump to perform, such as `alpha` or an
+explicit version. The workflow runs `seal bump <version>` and opens the release pull request.
+
+To prepare a release locally, install [`seal`](https://github.com/MatthewMckee4/seal), then run:
+
+```shell
+seal bump alpha
+seal bump <version>
+```
+
+Seal creates the release branch, commits and pushes the changes, and opens a pull request. Merge
+the pull request, then run the `Release` workflow to publish that version.
+
 ## Documentation
 
 To build the documentation locally:
